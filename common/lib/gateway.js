@@ -25,7 +25,7 @@ const monthToIndex = (month) => {
     return index + 1;
 }
 
-exports.factory = (opts = {}) => {
+exports.createGateway = (opts = {}) => {
 
     const connections = new Pool(opts);
 
