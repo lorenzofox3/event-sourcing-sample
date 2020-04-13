@@ -3,7 +3,7 @@
 ## getting started
 
 1. go in data folder ``cd data``
-2. build the db container ``docker build -t sample-db .``
+2. build the db container ``docker build -t sample-db .`` (It will have schema, functions, etc packaged)
 3. start the db ``source ./start-db.sh``
 
 You can connect to the DB from inside the container using psql
