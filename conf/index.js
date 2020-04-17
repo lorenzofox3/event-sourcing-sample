@@ -1,4 +1,2 @@
-module.exports = {
-    db: Object.freeze(require('./db.js')),
-    servers: Object.freeze(require('./servers'))
-};
+export {default as db} from './db.js';
+export {default as servers} from './servers.js';

@@ -1,4 +1,4 @@
-module.exports = () => async (ctx, next) => {
+export default () => async (ctx, next) => {
     ctx.status = 200;
     try {
         await next();

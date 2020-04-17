@@ -1,5 +1,5 @@
 const SERVER_TIMING_HEADER = 'Server-Timing';
-module.exports = (name = 'handler') => async (ctx, next) => {
+export default (name = 'handler') => async (ctx, next) => {
     const now = Date.now();
     await next();
     const header_value = ctx.get(SERVER_TIMING_HEADER)

@@ -66,7 +66,6 @@ const createChangeLabelCategory = (transaction_id) => ({
     }
 });
 
-
 const dataGenerator = async function* (limit = TRANSACTIONS_COUNT) {
     let i = 1;
     while (i <= limit) {

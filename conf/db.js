@@ -1,7 +1,7 @@
-module.exports = Object.freeze({
-    port: process.env.POSTGRES_PORT || process.env.PGPORT || 5432,
-    host: process.env.POSTGRES_HOST || process.env.PGHOST || '127.0.0.1',
+export default Object.freeze({
     user: process.env.POSTGRES_USER || process.env.PGUSER || 'docker',
+    host: process.env.POSTGRES_HOST || process.env.PGHOST || 'localhost',
+    database: process.env.POSTGRES_DB || process.env.PGDATABASE || 'test',
     password: process.env.POSTGRES_PASSWORD || process.env.PGPASSWORD || 'docker',
-    database: process.env.POSTGRES_DB || process.env.PGDATABASE || 'test'
+    port: process.env.POSTGRES_PORT || process.env.PGPORT || 5432
 });

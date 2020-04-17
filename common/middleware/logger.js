@@ -1,10 +1,9 @@
-const logger = require('koa-logger');
+import koaLogger from 'koa-logger';
 
-module.exports = (opts = {}) => {
-    const debug = opts.namespace ? require('debug')(opts.namespace) : console.log;
-    return logger({
+export default (opts) => {
+    return koaLogger({
         transporter: (str, args) => {
-            debug(str);
+            opts.logger(str);
         }
     });
 };

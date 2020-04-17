@@ -1,4 +1,4 @@
-module.exports = Object.freeze({
+export default Object.freeze({
     eventGateway: 3000,
     bookkeeping: 3001,
     balance: 3002,
