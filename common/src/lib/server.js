@@ -1,8 +1,9 @@
 import Koa from 'koa';
+import cors from '@koa/cors';
+import {middleware as schema} from 'koa-json-schema';
 import errors from '../middleware/errors.js';
 import logger from '../middleware/logger.js';
 import timing from '../middleware/server-timing.js';
-import {middleware as schema} from 'koa-json-schema';
 import {MONTHS_LIST} from './gateway.js';
 
 const defaultSchema = {
@@ -19,14 +20,15 @@ const defaultSchema = {
     required: ['account_id', 'month']
 };
 
-export const createApp = (handler) => (opts = {}) => {
+export const createApp = (handler) => (deps = {}, opts = {}) => {
     const app = new Koa();
-    app.use(logger(opts));
-    app.use(errors());
+    app.use(logger(deps));
+    app.use(errors(opts.errors));
+    app.use(cors(opts.cors));
     app.use(schema(defaultSchema, {
         coerceTypes: true
     }));
     app.use(timing(`handler`));
-    handler(app, opts);
+    handler(app, deps, opts);
     return app;
 };

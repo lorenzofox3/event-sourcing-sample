@@ -57,4 +57,4 @@ export const createBalance = ({month, accountId}) => {
     });
 };
 
-export {createRegistry} from '../../common/lib/registry.js';
+export {createStore} from '../../common/src/lib/store.js';

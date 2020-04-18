@@ -74,3 +74,19 @@ LANGUAGE SQL
 STABLE
 LEAKPROOF
 PARALLEL SAFE;
+
+CREATE OR REPLACE FUNCTION notify_new_event_created()
+  RETURNS trigger
+AS $$
+BEGIN
+    PERFORM pg_notify('events', to_json(NEW.*)::TEXT);
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER new_event_created
+  AFTER INSERT
+  ON events
+  FOR EACH ROW
+  EXECUTE PROCEDURE notify_new_event_created();

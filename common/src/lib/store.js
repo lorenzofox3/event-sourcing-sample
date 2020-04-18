@@ -1,4 +1,4 @@
-export const createRegistry = () => {
+export const createStore = () => {
     const items = [];
     return {
         fromTransaction(transactionId) {

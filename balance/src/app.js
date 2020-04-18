@@ -1,4 +1,4 @@
-import {createApp} from '../../common/lib/server.js';
+import {createApp} from '../../common/src/lib/server.js';
 import {createBalance} from './models.js';
 
 export const streamReducerFactory = gateway => (accountId, month) => {
@@ -16,17 +16,17 @@ export const streamReducerFactory = gateway => (accountId, month) => {
 };
 
 
-export const handler = (gateway, registry) => {
+export const handler = (gateway, store) => {
     const reduceStream = streamReducerFactory(gateway);
     return async (ctx, next) => {
         const {account_id, month} = ctx.request.query;
-        ctx.body = registry.add(
-            registry.fromTuple(account_id, month) ||
+        ctx.body = store.add(
+            store.fromTuple(account_id, month) ||
             await reduceStream(account_id, month)
         );
     };
 };
 
-export default createApp((app, {gateway, registry}) =>
-    app.use(handler(gateway, registry)));
+export default createApp((app, {gateway, store}) =>
+    app.use(handler(gateway, store)));
 

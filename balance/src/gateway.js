@@ -1,4 +1,4 @@
-import {createGateway as gatewayFactory} from '../../common/lib/gateway.js';
+import {createGateway as gatewayFactory} from '../../common/src/lib/gateway.js';
 
 export default gatewayFactory(`
 SELECT

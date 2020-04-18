@@ -1,14 +1,14 @@
 import app from './app.js';
 import createGateway from './gateway.js';
-import {createRegistry} from '../../common/lib/registry.js';
+import {createStore} from '../../common/src/lib/store.js';
 import {servers, db} from '../../conf/index.js';
-import loggerFactory from '../../common/lib/logger.js';
+import loggerFactory from '../../common/src/lib/logger.js';
 
-const {balance: port} = servers;
+const {balance: {port}} = servers;
 
 // create services
 const gateway = createGateway(db);
-const registry = createRegistry();
+const store = createStore();
 const logger = loggerFactory({namespace: 'sample:balance'});
 
 // subscribe from gateway
@@ -18,11 +18,11 @@ gateway.subscribe((err, ev) => {
         return;
     }
     logger(ev);
-})
+});
 
-const options = {logger, gateway, registry};
+const deps = {logger, gateway, store};
 
 // start http server
-app(options).listen(port, () => {
-    logger(`Listening on port:${port}`)
+app(deps, servers.balance).listen(port, () => {
+    logger(`Listening on port:${port}`);
 });

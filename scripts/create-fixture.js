@@ -28,7 +28,7 @@ const {
 });
 
 if (help) {
-    createReadStream(resolve(__dirname, './feed-db.txt'))
+    createReadStream(resolve(__dirname, './create-fixture.txt'))
         .pipe(process.stdout);
     return;
 }

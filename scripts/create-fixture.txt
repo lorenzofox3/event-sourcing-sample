@@ -2,7 +2,7 @@
 Create an events data set with transactions and other related events occurring on a year span (2019)
 
 Usage
-    node ./scripts/feed-db.js <options>
+    node ./scripts/create-fixture.js <options>
 
   Options
     --output, -o            file to output the result (default stdout)
@@ -14,6 +14,6 @@ Usage
     --transactions, -t      The number of transactions per account (default to 1000)
 
   Examples
-    node ./scripts/feed-db.js --accounts 100 --csv
+    node ./scripts/create-fixture.js --accounts 100 --csv
 
 
