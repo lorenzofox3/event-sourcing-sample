@@ -3,9 +3,10 @@ import {formatAmount} from '../../common/src/lib/util.js';
 const template = document.createElement(`template`);
 template.innerHTML = `
 <style>
+
 .positive{
-    background: #c8f9ad;
-    color: #268226;
+    background: var(--positive-background, #c8f9ad);
+    color: var(--positive-color, #268226);
 }
 
 .positive::before{
@@ -17,8 +18,8 @@ template.innerHTML = `
 }
 
 .negative{
-    background:#ffd9db;
-    color: #ff3c3c;
+    background:var(--negative-background, #ffd9db);
+    color: var(--negative-color,#ff3c3c);
 }
 
 #balance-row{
@@ -56,9 +57,17 @@ export class Balance extends HTMLElement {
             Number(this.getAttribute('credit')) : 0;
     }
     
+    set credit(val) {
+        this.setAttribute('credit', val);
+    }
+    
     get debit() {
         return this.hasAttribute('debit') ?
             Math.abs(Number(this.getAttribute('debit'))) : 0;
+    }
+    
+    set debit(val) {
+        this.setAttribute('debit', val);
     }
     
     get balance() {

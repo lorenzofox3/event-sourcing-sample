@@ -13,4 +13,6 @@ From the root you can create data fixture using ``node ./scripts/create-fixture.
 The database container share the ``data/fixture`` folder with the host.
 So you can connect to the DB from inside the container using psql:
 1. ``docker exec -it sample-test psql test docker`` (where "test" is the db name used when starting the container and "docker" the username)
-2. finally, you should be able to load you data from psql ``\copy events(event_type, event_data) from 'fixture/sample.csv' with delimiter ',' csv header`` 
+2. As you may insert a lot of data, you should first disable the trigger ``ALTER TABLE events DISABLE TRIGGER new_event_created``
+3. You should be able to load you data from psql ``\copy events(event_type, event_data) from 'fixture/sample.csv' with delimiter ',' csv header`` 
+4. Finally, you can re enable the trigger ``ALTER TABLE events ENABLE TRIGGER new_event_created``

@@ -20,11 +20,14 @@
     "faker": "^4.1.0",
     "json2csv": "^5.0.0",
     "nodemon": "^2.0.3",
-    "rollup": "^2.6.1"
+    "rollup": "^2.6.1",
+    "smart-table-core": "^3.0.7"
   },
   "scripts": {
     "balance": "node -r esm balance/src/index.js",
+    "bookkeeping": "node -r esm bookkeeping/src/index.js",
     "balance:dev": "nodemon -r esm balance/src/index.js",
+    "bookkeeping:dev": "nodemon -r esm bookkeeping/src/index.js",
     "web:build": "rollup -c ./web/rollup.js",
     "web:dev": "npm run web:build -- -w"
   },

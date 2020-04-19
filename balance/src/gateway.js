@@ -10,5 +10,5 @@ WHERE
 OR
     event_type = 'transaction_balance_changed'
 ORDER BY
-    event_id`
-);
+    event_id
+;`);

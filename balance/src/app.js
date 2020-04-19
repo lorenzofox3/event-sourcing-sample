@@ -19,10 +19,10 @@ export const streamReducerFactory = gateway => (accountId, month) => {
 export const handler = (gateway, store) => {
     const reduceStream = streamReducerFactory(gateway);
     return async (ctx, next) => {
-        const {account_id, month} = ctx.request.query;
+        const {accountId, month} = ctx.params;
         ctx.body = store.add(
-            store.fromTuple(account_id, month) ||
-            await reduceStream(account_id, month)
+            store.fromTuple(accountId, month) ||
+            await reduceStream(accountId, month)
         );
     };
 };
