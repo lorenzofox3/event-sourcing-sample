@@ -4,32 +4,67 @@ const template = document.createElement(`template`);
 template.innerHTML = `
 <style>
 
+:host{
+    padding: var(--layout-padding);
+}
+
+h2{
+    margin: 0;
+    font-size: larger;
+}
+
+h2 > * {
+    display:inline-block;
+    background-image: linear-gradient(to right, var(--theme-color), transparent);
+    background-repeat: no-repeat;
+    background-size: 100% 5px;
+    background-position-y: bottom;
+}
+
 .positive{
     background: var(--positive-background, #c8f9ad);
     color: var(--positive-color, #268226);
-}
-
-.positive::before{
-    content:'+'
-}
-
-.negative::before{
-    content:'-'
+    grid-column: 2;
+    border-right: 1px dashed var(--gray, gray);
 }
 
 .negative{
     background:var(--negative-background, #ffd9db);
     color: var(--negative-color,#ff3c3c);
+    grid-column: 3;
+    border-left: 1px dashed var(--gray, gray);
 }
 
 #balance-row{
     font-weight: bolder;
 }
 
-span[role=cell]{
+[role=cell]{
     text-align: right;
 }
+
+[role=rowheader]{
+    text-align: right;
+    padding-right: 0.5em;
+}
+
+[role=rowheader]::after{
+    content: ':';
+}
+
+[role=row]{
+    display: grid;
+    padding: 0.2em 0;
+    grid-template-columns: 1fr var(--amount-column-width, 90px) var(--amount-column-width, 90px);
+}
+
+[role=row]:last-child{
+    border-top: 1px solid var(--gray, gray);
+}
+
+
 </style>
+<h2><span>Monthly Balance</span></h2>
 <div aria-label="balance" role="table">
     <div role="row" id="debit-row">
         <span role="rowheader">debit</span>
@@ -45,6 +80,8 @@ span[role=cell]{
     </div>
 </div>
 `;
+
+export const balanceTag = `app-balance`;
 
 export class Balance extends HTMLElement {
     
@@ -63,7 +100,7 @@ export class Balance extends HTMLElement {
     
     get debit() {
         return this.hasAttribute('debit') ?
-            Math.abs(Number(this.getAttribute('debit'))) : 0;
+            Number(this.getAttribute('debit')) : 0;
     }
     
     set debit(val) {
@@ -71,7 +108,7 @@ export class Balance extends HTMLElement {
     }
     
     get balance() {
-        return this.credit - this.debit;
+        return this.credit + this.debit;
     }
     
     attributeChangedCallback(name, oldVal, newVal) {
@@ -82,7 +119,7 @@ export class Balance extends HTMLElement {
         }
         
         const balanceDisplay = this.shadowRoot.querySelector('#balance-row [role=cell]');
-        balanceDisplay.textContent = formatAmount(Math.abs(this.balance));
+        balanceDisplay.textContent = formatAmount(this.balance);
         balanceDisplay.classList.toggle('positive', this.balance > 0);
         balanceDisplay.classList.toggle('negative', this.balance < 0);
     }

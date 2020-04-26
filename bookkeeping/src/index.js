@@ -1,6 +1,6 @@
 import app from './app.js';
-import createGateway from './gateway.js';
-import {createStore} from '../../common/src/lib/store.js';
+import createGateway, {eventProcessor} from './gateway.js';
+import {createStore} from '../../common/src/lib/models.js';
 import {servers, db} from '../../conf/index.js';
 import loggerFactory from '../../common/src/lib/logger.js';
 
@@ -9,7 +9,8 @@ const {bookkeeping: {port}} = servers;
 // create services
 const gateway = createGateway(db);
 const store = createStore();
-const logger = loggerFactory({namespace: 'sample:bookkeeping'});
+const logger = loggerFactory({namespace: 'es:bookkeeping'});
+const processEvent = eventProcessor(store);
 
 // subscribe from gateway
 gateway.subscribe((err, ev) => {
@@ -17,7 +18,8 @@ gateway.subscribe((err, ev) => {
         logger(err);
         return;
     }
-    logger(ev);
+    processEvent(ev);
+    logger(`event ${ev.event_id} processed`);
 });
 
 const deps = {logger, gateway, store};

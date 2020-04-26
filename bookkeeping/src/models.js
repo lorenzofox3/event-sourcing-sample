@@ -35,40 +35,48 @@ export const createTransaction = (input = {}) => {
     });
 };
 
+const transactionsSymbol = Symbol('transactions');
+
 const LedgerPrototype = {
+    has(transactionId) {
+        return this[transactionsSymbol].has(transactionId);
+    },
+    get(transactionId) {
+        return this[transactionsSymbol].get(transactionId);
+    },
     [Symbol.iterator]() {
-        return this._transactions.values();
+        return this[transactionsSymbol].values();
     },
     addTransactions(...transactions) {
         for (const transaction of transactions) {
             const {transaction_id: id, created_at: createdAt, label, category, balance = 0} = transaction;
-            this._transactions.set(id, createTransaction({
+            this[transactionsSymbol].set(id, createTransaction({
                 id,
                 label,
                 category,
                 balance,
-                createdAt:new Date(createdAt)
+                createdAt: new Date(createdAt)
             }));
         }
         return this;
     },
-    changeTransactionBalance(transactionId, delta) {
-        if (this._transactions.has(transactionId)) {
-            const tr = this._transactions.get(transactionId);
-            tr.balance += Number(delta);
+    changeTransactionBalance(transactionId, newBalance) {
+        if (this[transactionsSymbol].has(transactionId)) {
+            const tr = this[transactionsSymbol].get(transactionId);
+            tr.balance = Number(newBalance);
         }
         return this;
     },
     changeTransactionCategory(transactionId, category) {
-        if (this._transactions.has(transactionId)) {
-            const tr = this._transactions.get(transactionId);
+        if (this[transactionsSymbol].has(transactionId)) {
+            const tr = this[transactionsSymbol].get(transactionId);
             tr.category = category;
         }
         return this;
     },
     changeTransactionLabel(transactionId, label) {
-        if (this._transactions.has(transactionId)) {
-            const tr = this._transactions.get(transactionId);
+        if (this[transactionsSymbol].has(transactionId)) {
+            const tr = this[transactionsSymbol].get(transactionId);
             tr.label = label;
         }
         return this;
@@ -80,7 +88,7 @@ export const createLedger = ({month, accountId}) => {
     return Object.create(LedgerPrototype, {
         accountId: {value: accountId, enumerable: true},
         month: {value: month, enumerable: true},
-        _transactions: {value: transactions},
+        [transactionsSymbol]: {value: transactions},
         transactions: {
             get() {
                 return [...this];

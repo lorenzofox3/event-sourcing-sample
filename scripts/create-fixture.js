@@ -46,7 +46,7 @@ const createChangeBalanceEvent = (transaction_id) => ({
     event_type: 'transaction_balance_changed',
     event_data: {
         transaction_id,
-        delta: faker.random.number({min: -10000, max: 10000})
+        balance: faker.random.number({min: -10000, max: 10000})
     }
 });
 
@@ -80,7 +80,7 @@ const dataGenerator = async function* (limit = TRANSACTIONS_COUNT) {
                 created_at: yearScale(i / TRANSACTIONS_COUNT), // stored as unix timestamp
                 transaction_id: i,
                 label: faker.finance.transactionType(),
-                balance: faker.random.number({min: -50000, max: 50000}), // between -500 euros and +500 euros
+                balance: faker.random.number({min: -20000, max: 20000}), // between -500 euros and +500 euros
                 account_id: faker.random.number({min: 1, max: ACCOUNT_COUNT})
             }
         });

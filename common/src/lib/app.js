@@ -42,6 +42,17 @@ const defaultSchema = {
     required: ['account_id', 'month']
 };
 
+export const createHandlerFromReducer = (reducerFactory) => (gateway, store) => {
+    const streamReducer = reducerFactory(gateway);
+    return async (ctx, next) => {
+        const {accountId, month} = ctx.params;
+        ctx.body = store.add(
+            store.fromTuple(accountId, month) ||
+            await streamReducer(accountId, month)
+        );
+    };
+};
+
 export const createApp = (handler) => (deps = {}, opts = {}) => {
     const app = new Koa();
     app.use(logger(deps));
@@ -53,7 +64,7 @@ export const createApp = (handler) => (deps = {}, opts = {}) => {
     app.use(async (ctx, next) => {
         const {account_id, month} = ctx.request.query;
         ctx.params = {
-            accountId: account_id,
+            accountId: Number(account_id),
             month: monthToIndex(month)
         };
         await next();

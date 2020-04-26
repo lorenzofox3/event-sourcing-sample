@@ -15,14 +15,14 @@ const dbConf = {
 
 const {
     ['--help']: help = false,
-    ['--category']: category = null,
+    ['--label']: label = null,
     ['--id']: id
 } = arg({
     '--help': Boolean,
-    '--category': String,
+    '--label': String,
     '--id': Number,
     '-h': '--help',
-    '-c': '--category',
+    '-l': '--label',
     '-i': '--id'
 }, {
     permissive: false,
@@ -30,16 +30,16 @@ const {
 });
 
 if (help) {
-    createReadStream(resolve(__dirname, './change-category.txt'))
+    createReadStream(resolve(__dirname, './change-label.txt'))
         .pipe(process.stdout);
     return;
 }
 
-const createChangeCategoryEvent = (transaction_id, category) => ({
-    event_type: 'transaction_category_changed',
+const createChangeLabelEvent = (transaction_id, label) => ({
+    event_type: 'transaction_label_changed',
     event_data: {
         transaction_id,
-        category
+        label
     }
 });
 
@@ -48,8 +48,8 @@ const createChangeCategoryEvent = (transaction_id, category) => ({
     try {
         const res = await pool.query(`
         INSERT INTO events(event_type, event_data)
-        VALUES ('transaction_category_changed', $1) RETURNING *;`, [
-            createChangeCategoryEvent(id, category).event_data
+        VALUES ('transaction_label_changed', $1) RETURNING *;`, [
+            createChangeLabelEvent(id, label).event_data
         ]);
         console.log(res);
     } catch (e) {

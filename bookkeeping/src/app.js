@@ -1,4 +1,4 @@
-import {createApp} from '../../common/src/lib/server.js';
+import {createApp, createHandlerFromReducer} from '../../common/src/lib/app.js';
 import {createLedger} from './models.js';
 
 export const streamReduceFactory = (gateway) => (accountId, month) => {
@@ -10,7 +10,7 @@ export const streamReduceFactory = (gateway) => (accountId, month) => {
                 case 'transaction_created':
                     return ledger.addTransactions(ev);
                 case 'transaction_balance_changed':
-                    return ledger.changeTransactionBalance(ev.transaction_id, ev.delta);
+                    return ledger.changeTransactionBalance(ev.transaction_id, ev.balance);
                 case 'transaction_category_changed':
                     return ledger.changeTransactionCategory(ev.transaction_id, ev.category);
                 case 'transaction_label_changed':
@@ -21,16 +21,7 @@ export const streamReduceFactory = (gateway) => (accountId, month) => {
         }, newLedger);
 };
 
-export const handler = (gateway, store) => {
-    const reduceStream = streamReduceFactory(gateway);
-    return async (ctx, next) => {
-        const {accountId, month} = ctx.params;
-        ctx.body = store.add(
-            store.fromTuple(accountId, month) ||
-            await reduceStream(accountId, month)
-        );
-    };
-};
+export const handler = createHandlerFromReducer(streamReduceFactory);
 
 export default createApp((app, {gateway, store}) => app.use(handler(gateway, store)));
 
