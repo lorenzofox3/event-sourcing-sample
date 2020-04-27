@@ -3,10 +3,11 @@ import {Pool} from 'pg';
 import createSubscriber from 'pg-listen';
 import {stream} from '@lorenzofox3/for-await';
 import QueryStream from 'pg-query-stream';
+import {ISOFormatDate} from './util.js';
 
 
 const CHANNEL_NAME = 'events';
-
+const YEAR = 2019;
 
 // todo better connection handling for subscribe/unsubscribe, max subscribers, reconnect, etc
 export const createGateway = (sqlQuery) => (opts = {}) => {
@@ -37,7 +38,9 @@ export const createGateway = (sqlQuery) => (opts = {}) => {
         replay: (accountId, month) => {
             assert(accountId, 'accountId is required');
             assert(month, 'month is required');
-            const query = new QueryStream(sqlQuery, [accountId, month]);
+            const startDate = new Date(YEAR, month, 1);
+            const endDate = new Date(YEAR, month + 1, 1);
+            const query = new QueryStream(sqlQuery, [accountId, ISOFormatDate(startDate), ISOFormatDate(endDate)]);
             connections
                 .connect()
                 .then((client) => {

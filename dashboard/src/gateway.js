@@ -4,7 +4,7 @@ export default gatewayFactory(`
 SELECT
     *
 FROM
-    stream_events($1, $2)
+    stream_transaction_events($1, $2, $3)
 WHERE
     event_type = 'transaction_created'
 OR

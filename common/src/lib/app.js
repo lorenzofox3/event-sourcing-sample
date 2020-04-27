@@ -25,7 +25,7 @@ const monthToIndex = (month) => {
     if (index === -1) {
         throw new Error(`unknown month ${month}`);
     }
-    return index + 1;
+    return index;
 };
 
 const defaultSchema = {
