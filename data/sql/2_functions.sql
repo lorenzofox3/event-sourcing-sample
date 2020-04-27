@@ -1,34 +1,38 @@
 -- for a given account
--- find all events related to transactions created in a given month
+-- find all events related to transactions created in a given time frame
 -- note: all subsequents events for these transactions will be recorded too (label changed, etc)
--- even though the even occurred in a different month
-CREATE OR REPLACE FUNCTION stream_events(
+-- even though the event occurred in a different month
+CREATE OR REPLACE FUNCTION stream_transaction_events(
     account_id integer,
-    month integer
+    start_date text,
+    end_date text
 ) RETURNS SETOF events
 AS $$
-    WITH transactions AS (
+    WITH transactions_ids AS (
         SELECT
-            (event_data -> 'transaction_id')::integer as transaction_id
+            (event_data ->> 'transaction_id')::integer as transaction_id
         FROM
             events
         WHERE
-            CAST(event_data -> 'account_id' AS INTEGER)=$1
+            (event_data ->> 'account_id')::integer=:account_id
         AND
-            date_part('month',(event_data ->> 'created_at')::date)=$2
+            event_type = 'transaction_created'
+        AND
+            event_data ->> 'created_at' >= :start_date
+        AND
+            event_data ->> 'created_at' < :end_date
     )
+
     SELECT
-        *
+        event_id,
+        event_type,
+        event_data
     FROM
         events
-    WHERE
-        CAST(events.event_data ->> 'transaction_id' AS INTEGER)
-    IN (
-        SELECT
-            transaction_id
-        FROM
-            transactions
-    )
+    JOIN
+        transactions_ids
+    ON
+        transactions_ids.transaction_id = (events.event_data ->> 'transaction_id')::integer
     ORDER BY
         event_id
 $$
@@ -52,6 +56,3 @@ CREATE TRIGGER new_event_created
   ON events
   FOR EACH ROW
   EXECUTE PROCEDURE notify_new_event_created();
-
-
---CREATE month_account_idx ON events((event_data ->> 'account_id')::integer, date_part('month',(event_data ->> 'created_at')::date));
