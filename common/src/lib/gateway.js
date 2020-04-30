@@ -16,6 +16,17 @@ ORDER BY
     event_id
 ;`;
 
+const SNAPSHOT_SQL_QUERY = `
+SELECT
+    *
+FROM
+    stream_transaction_events($1, $2, $3)
+WHERE
+    created_at <= $4
+ORDER BY
+    event_id
+;`;
+
 // todo better connection handling for subscribe/unsubscribe, max subscribers, reconnect, etc
 export const createGateway = (opts = {}) => {
     const connections = new Pool(opts);
@@ -42,10 +53,18 @@ export const createGateway = (opts = {}) => {
     process.on('exit', () => subscriber.close());
     
     return {
-        replay: (accountId, month) => {
+        replay: (accountId, month, snapshot_date) => {
             const startDate = new Date(YEAR, month, 1);
             const endDate = new Date(YEAR, month + 1, 1);
-            const query = new QueryStream(SQL_QUERY, [accountId, formatISODate(startDate), formatISODate(endDate)]);
+            const snapshot = snapshot_date ? new Date(snapshot_date) : void 0;
+            const sqlQuery = snapshot_date ? SNAPSHOT_SQL_QUERY : SQL_QUERY;
+            const queryArgs = [accountId, formatISODate(startDate), formatISODate(endDate)];
+            
+            if (snapshot) {
+                queryArgs.push(formatISODate(snapshot));
+            }
+            
+            const query = new QueryStream(sqlQuery, queryArgs);
             connections
                 .connect()
                 .then((client) => {

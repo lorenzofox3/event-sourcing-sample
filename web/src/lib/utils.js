@@ -12,6 +12,18 @@ export const connector = (contentTag, fetcher, mapFn = state => state) => class 
         return this.getAttribute('month') || new URLSearchParams(document.location.search.substring(1)).get('month');
     }
     
+    get snapshotDate() {
+        if (this.hasAttribute('snapshot_date')) {
+            return new Date(this.getAttribute('snapshot_date'));
+        } else {
+            const snapshotDate = new URLSearchParams(document.location.search.substring(1)).get('snapshot_date');
+            if (snapshotDate) {
+                return new Date(snapshotDate);
+            }
+        }
+        return null;
+    }
+    
     get accountId() {
         return Number(this.getAttribute('account-id') ||
             new URLSearchParams(document.location.search.substring(1)).get('account_id')
@@ -37,7 +49,7 @@ export const connector = (contentTag, fetcher, mapFn = state => state) => class 
     
     async connectedCallback() {
         try {
-            const res = await fetcher(this.month, this.accountId);
+            const res = await fetcher(this.month, this.accountId, this.snapshotDate);
             const state = mapFn(res);
             for (const [prop, value] of Object.entries(state)) {
                 this._contentEl[prop] = value;

@@ -49,11 +49,13 @@ const defaultSchema = {
 export const createHandlerFromReducer = (reducerFactory) => (gateway, store) => {
     const streamReducer = reducerFactory(gateway);
     return async (ctx, next) => {
-        const {accountId, month} = ctx.params;
-        ctx.body = store.add(
-            store.fromTuple(accountId, month) ||
-            await streamReducer(accountId, month)
-        );
+        const {accountId, month, snapshot_date} = ctx.params;
+        ctx.body = snapshot_date ?
+            await streamReducer(accountId, month, snapshot_date) :
+            store.add(
+                store.fromTuple(accountId, month) ||
+                await streamReducer(accountId, month)
+            );
     };
 };
 
@@ -72,10 +74,10 @@ export const createApp = (handler) => (deps = {}, opts = {}) => {
             month: monthToIndex(month)
         };
         
-        if(snapshot_date){
+        if (snapshot_date) {
             ctx.params.snapshot_date = new Date(snapshot_date);
         }
-    
+        
         await next();
     });
     app.use(timing(`handler`));
