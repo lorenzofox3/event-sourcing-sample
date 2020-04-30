@@ -1,16 +1,23 @@
-import assert from 'assert';
 import {Pool} from 'pg';
 import createSubscriber from 'pg-listen';
 import {stream} from '@lorenzofox3/for-await';
 import QueryStream from 'pg-query-stream';
-import {ISOFormatDate} from './util.js';
-
+import {formatISODate} from './util.js';
 
 const CHANNEL_NAME = 'events';
 const YEAR = 2019;
 
+const SQL_QUERY = `
+SELECT
+    *
+FROM
+    stream_transaction_events($1, $2, $3)
+ORDER BY
+    event_id
+;`;
+
 // todo better connection handling for subscribe/unsubscribe, max subscribers, reconnect, etc
-export const createGateway = (sqlQuery) => (opts = {}) => {
+export const createGateway = (opts = {}) => {
     const connections = new Pool(opts);
     const subscriber = createSubscriber(opts);
     const listeners = [];
@@ -36,11 +43,9 @@ export const createGateway = (sqlQuery) => (opts = {}) => {
     
     return {
         replay: (accountId, month) => {
-            assert(accountId, 'accountId is required');
-            assert(month, 'month is required');
             const startDate = new Date(YEAR, month, 1);
             const endDate = new Date(YEAR, month + 1, 1);
-            const query = new QueryStream(sqlQuery, [accountId, ISOFormatDate(startDate), ISOFormatDate(endDate)]);
+            const query = new QueryStream(SQL_QUERY, [accountId, formatISODate(startDate), formatISODate(endDate)]);
             connections
                 .connect()
                 .then((client) => {

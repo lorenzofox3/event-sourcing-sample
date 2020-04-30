@@ -1,17 +1,17 @@
 import {createGateway as gatewayFactory} from '../../common/src/lib/gateway.js';
 
-export default gatewayFactory(`
-SELECT
-    *
-FROM
-    stream_transaction_events($1, $2, $3)
-WHERE
-    event_type = 'transaction_created'
-OR
-    event_type = 'transaction_balance_changed'
-ORDER BY
-    event_id
-;`);
+export default (opts) => {
+    const base = gatewayFactory(opts);
+    const replay = base.replay;
+    
+    return Object.assign(base, {
+        replay(...args) {
+            return replay(...args)
+                .filter((ev) => ev.event_type === 'transaction_created' || ev.event_type === 'transaction_balance_changed');
+        }
+    });
+}
+
 
 export const eventProcessor = (store) => (ev) => {
     const {event_data: data, event_type: type} = ev;

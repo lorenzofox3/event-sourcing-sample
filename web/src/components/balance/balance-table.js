@@ -1,6 +1,8 @@
-import {formatAmount} from '../../common/src/lib/util.js';
+import {formatAmount} from '../../../../common/src/lib/util.js';
 
 const template = document.createElement(`template`);
+
+// language=HTML
 template.innerHTML = `
 <style>
 

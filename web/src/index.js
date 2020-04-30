@@ -1,8 +1,10 @@
-import {Balance, balanceTag} from '../../balance/src/ui-components.js';
-import {Ledger, ledgerTag, Transaction, transactionTag} from '../../bookkeeping/src/ui-components.js';
-import {barTag, balanceHistogramTag, Bar, BalanceHistogram} from '../../dashboard/src/ui-components.js';
-import {balance, bookkeeping, dashboard} from './http-client.js';
-import {connector} from './utils.js';
+import {balance, bookkeeping, dashboard} from './lib/http-client.js';
+import {connector} from './lib/utils.js';
+import {Balance, balanceTag} from './components/balance/balance-table.js';
+import {BalanceHistogram, balanceHistogramTag} from './components/dashboard/balance-histogram.js';
+import {Ledger, ledgerTag} from './components/bookkeeping/ledger.js';
+import {Bar, barTag} from './components/dashboard/balance-bar.js';
+import {Transaction, transactionTag} from './components/bookkeeping/transaction.js';
 
 const staticBalanceTag = balanceTag + '-static';
 const staticBalanceHistogramTag = balanceHistogramTag + '-static';

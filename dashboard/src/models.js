@@ -56,9 +56,9 @@ const createBin = ({day}) => {
     });
 };
 
-// month being 1 indexed
+// month being 0 indexed
 const getNumberOfDayInMonth = (month, year = 2019) => {
-    return new Date(year, month, 0).getDate();
+    return new Date(year, month + 1, 0).getDate();
 };
 
 export const createHistogram = ({month, accountId}) => {

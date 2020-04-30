@@ -56,3 +56,15 @@ export const connector = (contentTag, fetcher, mapFn = state => state) => class 
         this._contentEl = document.createElement(contentTag);
     }
 };
+
+export const debounce = (fn, time = 300) => {
+    let timeout = null;
+    return (...args) => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            fn(...args);
+        }, time);
+    };
+};

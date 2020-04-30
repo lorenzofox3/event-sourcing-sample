@@ -14,19 +14,17 @@ AS $$
         FROM
             events
         WHERE
-            (event_data ->> 'account_id')::integer=:account_id
+            (event_data ->> 'account_id')::integer=$1
         AND
             event_type = 'transaction_created'
         AND
-            event_data ->> 'created_at' >= :start_date
+            event_data ->> 'created_at' > $2
         AND
-            event_data ->> 'created_at' < :end_date
+            event_data ->> 'created_at' <= $3
     )
 
     SELECT
-        event_id,
-        event_type,
-        event_data
+        events.*
     FROM
         events
     JOIN

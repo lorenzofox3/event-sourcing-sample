@@ -1,13 +1,6 @@
 import {createGateway} from '../../common/src/lib/gateway.js';
 
-export default createGateway(`
-SELECT
-    *
-FROM
-    stream_transaction_events($1, $2, $3)
-ORDER BY
-    event_id
-;`);
+export default createGateway;
 
 export const eventProcessor = (store) => (ev) => {
     const {event_data: data, event_type: type} = ev;

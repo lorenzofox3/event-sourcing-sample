@@ -37,6 +37,10 @@ const defaultSchema = {
         month: {
             type: 'string',
             enum: MONTHS_LIST
+        },
+        snapshot_date: {
+            type: 'string',
+            format: 'date'
         }
     },
     required: ['account_id', 'month']
@@ -62,11 +66,16 @@ export const createApp = (handler) => (deps = {}, opts = {}) => {
         coerceTypes: true
     }));
     app.use(async (ctx, next) => {
-        const {account_id, month} = ctx.request.query;
+        const {account_id, month, snapshot_date} = ctx.request.query;
         ctx.params = {
             accountId: Number(account_id),
             month: monthToIndex(month)
         };
+        
+        if(snapshot_date){
+            ctx.params.snapshot_date = new Date(snapshot_date);
+        }
+    
         await next();
     });
     app.use(timing(`handler`));

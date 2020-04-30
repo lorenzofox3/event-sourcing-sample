@@ -7,14 +7,6 @@ export const BalancePrototype = {
         return this.transactions.has(transactionId);
     },
     
-    _updateBalance(delta) {
-        if (delta > 0) {
-            this.credit += delta;
-        } else {
-            this.debit += delta;
-        }
-    },
-    
     changeTransactionBalance(transactionId, newBalance) {
         
         if (!this.has(transactionId)) {

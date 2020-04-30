@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 const {Readable} = require('stream');
-const {createReadStream, createWriteStream} = require("fs");
-const {resolve} = require("path");
-const arg = require("arg");
+const {createReadStream, createWriteStream} = require('fs');
+const {resolve} = require('path');
+const arg = require('arg');
 const {Transform} = require('json2csv');
 const faker = require('faker');
+
+// ISO 8601
+const formatISODate = (date) => date.toISOString().split('T')[0];
 
 const {
     ['--help']: help = false,
@@ -39,8 +42,11 @@ const outputStream = output ?
 
 const TRANSACTIONS_COUNT = ACCOUNT_COUNT * TRANSACTIONS_BY_ACCOUNT_COUNT;
 
-const getLinearTimeScale = (start, end) => ratio => new Date(Math.round(start + ratio * (end - start)));
-const yearScale = getLinearTimeScale((new Date(2019, 0, 1).getTime()), (new Date(2020, 0, 1).getTime()));
+const getLinearTimeScale = (start, end) => ratio => {
+    const date = new Date(Math.round(start + ratio * (end - start)));
+    return formatISODate(date);
+};
+const yearScale = getLinearTimeScale((new Date(2019, 0, 1)).getTime(), (new Date(2020, 0, 1)).getTime());
 
 const createChangeBalanceEvent = (transaction_id) => ({
     event_type: 'transaction_balance_changed',
@@ -86,23 +92,23 @@ const dataGenerator = async function* (limit = TRANSACTIONS_COUNT) {
         });
         i++;
     }
-
+    
     /*
     add change category events, change balance, etc. We do it after transactions have been created to make the dataset coherent.
     In practice the whole data set would have more entropy and would be much less predictable.
     (Roughly ~3 sub sequent events for each transaction)
      */
-
+    
     i = 1;
-
+    
     while (i <= limit) {
-        const transactionId = Math.ceil(Math.random() * TRANSACTIONS_COUNT)
+        const transactionId = Math.ceil(Math.random() * TRANSACTIONS_COUNT);
         yield* [
             Math.random() > 0.4 ? createChangeCategoryEvent(transactionId) : createChangeBalanceEvent(transactionId),
             Math.random() > 0.6 ? createChangeCategoryEvent(transactionId) : createChangeLabelCategory(transactionId),
-            Math.random() > 0.5 ? createChangeCategoryEvent(transactionId) : createChangeBalanceEvent(transactionId),
+            Math.random() > 0.5 ? createChangeCategoryEvent(transactionId) : createChangeBalanceEvent(transactionId)
         ].map((ev) => JSON.stringify(ev));
-
+        
         i++;
     }
 };
@@ -110,7 +116,7 @@ const dataGenerator = async function* (limit = TRANSACTIONS_COUNT) {
 let input = Readable.from(dataGenerator(ACCOUNT_COUNT * TRANSACTIONS_BY_ACCOUNT_COUNT));
 
 if (csv) {
-    input = input.pipe(new Transform())
+    input = input.pipe(new Transform());
 }
 
 input.pipe(outputStream);
