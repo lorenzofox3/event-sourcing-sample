@@ -1,5 +1,8 @@
-import {createApp, createHandlerFromReducer} from '../../common/src/lib/app.js';
+import Koa from 'koa';
+import {createHandlerFromReducer, defaultSchema} from '../../common/src/lib/app.js';
+import cast from '../../common/src/middleware/cast-parameters.js';
 import {createHistogram} from './models.js';
+import {middleware as schema} from 'koa-json-schema';
 
 export const streamReducerFactory = (gateway) => (accountId, month, snapshotDate) => {
     const newHistogram = createHistogram({month, accountId});
@@ -14,4 +17,14 @@ export const streamReducerFactory = (gateway) => (accountId, month, snapshotDate
 
 export const handler = createHandlerFromReducer(streamReducerFactory);
 
-export default createApp((app, {gateway, store}) => app.use(handler(gateway, store)));
+export default ({gateway, store}) => {
+    const app = new Koa();
+    app.use(schema(defaultSchema, {
+        coerceTypes: true
+    }));
+    app.use(cast());
+    app.use(handler(gateway, store));
+    return app;
+}
+
+

@@ -19,5 +19,5 @@ So you can connect to the DB from inside the container using psql:
 
 ### Updating data
 
-For now, all the updates come from components out of the current system. To simulate such events, you can use one of the scripts listed in the repository
+For now, all the updates come from components out of the current system. To simulate such events, you can use one of the scripts listed in the directory [scripts](./scripts)
 

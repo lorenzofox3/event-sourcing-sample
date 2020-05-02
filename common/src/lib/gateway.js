@@ -27,7 +27,6 @@ ORDER BY
     event_id
 ;`;
 
-// todo better connection handling for subscribe/unsubscribe, max subscribers, reconnect, etc
 export const createGateway = (opts = {}) => {
     const connections = new Pool(opts);
     const subscriber = createSubscriber(opts);
@@ -82,6 +81,10 @@ export const createGateway = (opts = {}) => {
                 await subscriber.connect();
                 await subscriber.listenTo(CHANNEL_NAME);
             }
+        },
+        close() {
+            subscriber.close();
+            connections.end();
         }
     };
 };

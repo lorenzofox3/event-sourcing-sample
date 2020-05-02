@@ -13,8 +13,5 @@ export default Object.freeze({
         port: process.env.DASHBOARD_PORT || 3003,
         public: process.env.DASHBOARD_PUBLIC || 'http://localhost:3003',
         cors: process.env.DASHBOARD_CORS || '*'
-    }),
-    web: Object.freeze({
-        port: 3000
     })
 });

@@ -1,5 +1,8 @@
-import {createApp, createHandlerFromReducer} from '../../common/src/lib/app.js';
+import {createHandlerFromReducer, defaultSchema} from '../../common/src/lib/app.js';
 import {createBalance} from './models.js';
+import Koa from 'koa';
+import {middleware as schema} from 'koa-json-schema';
+import cast from '../../common/src/middleware/cast-parameters.js';
 
 export const streamReducerFactory = gateway => (accountId, month, snapshot_date) => {
     const newBalance = createBalance({
@@ -18,6 +21,12 @@ export const streamReducerFactory = gateway => (accountId, month, snapshot_date)
 
 export const handler = createHandlerFromReducer(streamReducerFactory);
 
-export default createApp((app, {gateway, store}) =>
-    app.use(handler(gateway, store)));
-
+export default ({gateway, store}) => {
+    const app = new Koa();
+    app.use(schema(defaultSchema, {
+        coerceTypes: true
+    }));
+    app.use(cast());
+    app.use(handler(gateway, store));
+    return app;
+}

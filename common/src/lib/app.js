@@ -1,34 +1,13 @@
 import Koa from 'koa';
+import log from 'log';
 import cors from '@koa/cors';
-import {middleware as schema} from 'koa-json-schema';
+import loggerMiddleware from 'koa-logger';
 import errors from '../middleware/errors.js';
-import logger from '../middleware/logger.js';
 import timing from '../middleware/server-timing.js';
+import mount from 'koa-mount';
+import {MONTHS_LIST} from './util.js';
 
-export const MONTHS_LIST = [
-    'jan',
-    'feb',
-    'mar',
-    'apr',
-    'may',
-    'jun',
-    'jul',
-    'aug',
-    'sep',
-    'oct',
-    'nov',
-    'dec'
-];
-
-const monthToIndex = (month) => {
-    const index = MONTHS_LIST.indexOf(month);
-    if (index === -1) {
-        throw new Error(`unknown month ${month}`);
-    }
-    return index;
-};
-
-const defaultSchema = {
+export const defaultSchema = {
     type: 'object',
     properties: {
         account_id: {
@@ -48,7 +27,7 @@ const defaultSchema = {
 
 export const createHandlerFromReducer = (reducerFactory) => (gateway, store) => {
     const streamReducer = reducerFactory(gateway);
-    return async (ctx, next) => {
+    return async (ctx) => {
         const {accountId, month, snapshot_date} = ctx.params;
         ctx.body = snapshot_date ?
             await streamReducer(accountId, month, snapshot_date) :
@@ -59,28 +38,15 @@ export const createHandlerFromReducer = (reducerFactory) => (gateway, store) => 
     };
 };
 
-export const createApp = (handler) => (deps = {}, opts = {}) => {
+export const createApp = (handler) => (opts = {}) => {
     const app = new Koa();
-    app.use(logger(deps));
-    app.use(errors(opts.errors));
-    app.use(cors(opts.cors));
-    app.use(schema(defaultSchema, {
-        coerceTypes: true
+    const {logger = log.get('es:default')} = opts;
+    app.use(loggerMiddleware({
+        transporter: (str) => logger.log(str)
     }));
-    app.use(async (ctx, next) => {
-        const {account_id, month, snapshot_date} = ctx.request.query;
-        ctx.params = {
-            accountId: Number(account_id),
-            month: monthToIndex(month)
-        };
-        
-        if (snapshot_date) {
-            ctx.params.snapshot_date = new Date(snapshot_date);
-        }
-        
-        await next();
-    });
+    app.use(errors());
+    app.use(cors(opts.cors));
     app.use(timing(`handler`));
-    handler(app, deps, opts);
+    app.use(mount(handler));
     return app;
 };

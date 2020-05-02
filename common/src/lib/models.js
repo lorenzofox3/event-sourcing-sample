@@ -34,7 +34,6 @@ export const BalancePrototype = {
     }
 };
 
-
 export const createStore = () => {
     const items = [];
     return {

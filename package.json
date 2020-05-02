@@ -9,6 +9,9 @@
     "koa": "^2.11.0",
     "koa-json-schema": "^3.0.1",
     "koa-logger": "^3.2.1",
+    "koa-mount": "^4.0.0",
+    "log": "^6.0.0",
+    "log-node": "^7.0.0",
     "pg": "^8.0.3",
     "pg-listen": "^1.5.1",
     "pg-query-stream": "^3.0.7"
@@ -17,6 +20,7 @@
     "@rollup/plugin-node-resolve": "^7.1.3",
     "@rollup/plugin-replace": "^2.3.2",
     "arg": "^4.1.3",
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "faker": "^4.1.0",
     "json2csv": "^5.0.0",
@@ -28,16 +32,16 @@
     "smart-table-core": "^3.0.7"
   },
   "scripts": {
-    "balance": "node -r esm balance/src/index.js",
-    "balance:dev": "nodemon -r esm balance/src/index.js",
-    "bookkeeping": "node -r esm bookkeeping/src/index.js",
-    "bookkeeping:dev": "nodemon -r esm bookkeeping/src/index.js",
-    "dashboard": "node -r esm dashboard/src/index.js",
-    "dashboard:dev": "nodemon -r esm dashboard/src/index.js",
+    "balance": "node -r esm balance/index.js",
+    "balance:dev": "nodemon -r esm balance/index.js",
+    "bookkeeping": "node -r esm bookkeeping/index.js",
+    "bookkeeping:dev": "nodemon -r esm bookkeeping/index.js",
+    "dashboard": "node -r esm dashboard/index.js",
+    "dashboard:dev": "nodemon -r esm dashboard/index.js",
     "web:build": "rollup -c ./web/rollup.js",
     "web:serve": "serve web",
     "web:dev": "npm run web:build -- -w & npm run web:serve",
-    "dev": "DEBUG=es:* run-p *:dev"
+    "dev": "LOG_LEVEL=debug run-p *:dev"
   },
   "repository": {
     "type": "git",

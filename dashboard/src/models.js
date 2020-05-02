@@ -78,3 +78,5 @@ export const createHistogram = ({month, accountId}) => {
         accountId: {value: accountId, enumerable: true}
     });
 };
+
+export {createStore} from '../../common/src/lib/models.js';

@@ -10,6 +10,31 @@ const dateFormat = new Intl.DateTimeFormat('fr-FR', {
     month: 'numeric'
 });
 
+
+export const MONTHS_LIST = [
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sep',
+    'oct',
+    'nov',
+    'dec'
+];
+
+// three letters month to 0 based index
+export const monthToIndex = (month) => {
+    const index = MONTHS_LIST.indexOf(month);
+    if (index === -1) {
+        throw new Error(`unknown month ${month}`);
+    }
+    return index;
+};
+
 export const formatAmount = val => numberFormat.format(val / 100);
 
 export const formatShortDate = val => dateFormat.format(val);
