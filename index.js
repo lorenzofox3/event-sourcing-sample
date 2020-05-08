@@ -1,29 +1,29 @@
 import {createServer} from 'http';
 import Koa from 'koa';
 import mount from 'koa-mount';
-import {db} from './conf/index.js';
+import {db} from './accounting/conf/index.js';
 import {
     createApp as createBalanceApp,
     createStore as createBalanceStore,
     eventProcessor as balanceProcessor,
     createGateway as createBalanceGateway
-} from './balance/src/module.js';
+} from './accounting/balance/src/module.js';
 import {
     createApp as createBookkeepingApp,
     createStore as createBookkeepingStore,
     createGateway as createBookkeepingGateway,
     eventProcessor as bookkeepingProcessor
-} from './bookkeeping/src/module.js';
+} from './accounting/bookkeeping/src/module.js';
 import {
     createApp as createDashboardApp,
     createStore as createDashboardStore,
     createGateway as createDashboardGateway,
     eventProcessor as dashboardProcessor
-} from './dashboard/src/module.js';
+} from './accounting/dashboard/src/module.js';
 
-import {createGateway} from './common/src/lib/gateway.js';
-import {createApp} from './common/src/lib/app.js';
-import loggerFactory from './common/src/lib/logger.js';
+import {createGateway} from './accounting/common/src/lib/gateway.js';
+import {createApp} from './accounting/common/src/lib/app.js';
+import loggerFactory from './accounting/common/src/lib/logger.js';
 
 const logger = loggerFactory();
 

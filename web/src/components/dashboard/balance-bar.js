@@ -1,4 +1,4 @@
-import {formatAmount} from '../../../../common/src/lib/util.js';
+import {formatAmount} from '../../../../accounting/common/src/lib/util.js';
 
 export const barTag = `app-balance-bar`;
 

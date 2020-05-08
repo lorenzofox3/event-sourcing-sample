@@ -1,4 +1,4 @@
-import {formatAmount, formatShortDate} from '../../../../common/src/lib/util.js';
+import {formatAmount, formatShortDate} from '../../../../accounting/common/src/lib/util.js';
 
 export const transactionTag = `app-transaction`;
 

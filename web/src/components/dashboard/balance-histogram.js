@@ -1,4 +1,4 @@
-import {formatAmount} from '../../../../common/src/lib/util.js';
+import {formatAmount} from '../../../../accounting/common/src/lib/util.js';
 import {barTag} from './balance-bar.js';
 
 const histogramTemplate = document.createElement(`template`);

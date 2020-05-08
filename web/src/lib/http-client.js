@@ -1,4 +1,4 @@
-import clientFactory from '../../../common/src/lib/http-client.js';
+import clientFactory from '../../../accounting/common/src/lib/http-client.js';
 
 // for the browser
 const client = clientFactory();

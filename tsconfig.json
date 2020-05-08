@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowUnreachableCode": false,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "ESNext"
+    ],
+    "alwaysStrict": true
+  },
+  "compileOnSave": true
+}
