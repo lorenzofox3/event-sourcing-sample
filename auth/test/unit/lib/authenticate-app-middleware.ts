@@ -41,6 +41,25 @@ export default (t: Assert) => {
         t.eq(res.get('WWW-Authenticate'), 'Basic');
     });
 
+    t.test(`Uncaught Errors should bubble up`, async (t) => {
+        // given
+        const app = new Koa();
+        const applicationsStub = <unknown>{
+            async authenticate(appId: string, appSecret: string) {
+                throw new Error(`don't know what is going on`);
+            }
+        } as ApplicationsModel;
+        app.use(auth(applicationsStub));
+
+        // do
+        const res = await request(app.callback())
+            .get('/')
+            .auth('foo', 'bar');
+
+        // expect
+        t.eq(res.status, 500);
+    });
+
     t.test(`go through if client credentials are ok`, async (t) => {
         // given
         const app = new Koa();
