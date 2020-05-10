@@ -1,11 +1,9 @@
 import * as crypto from 'crypto';
-import {deepEqual} from 'assert';
 import {promisify} from 'util';
 import {Assert} from 'zora';
 import {Connection} from '../../../src/lib/db.js';
 import {createUsersModel} from '../../../src/models/users.js';
-import {InvalidPasswordError, UserNotFoundError} from '../../../src/lib/errors.js';
-import {TokensModel} from '../../../src/models/tokens.js';
+import {InvalidPasswordError, UserAlreadyExistsError, UserNotFoundError} from '../../../src/lib/errors.js';
 
 const pbkdf2 = promisify(crypto.pbkdf2);
 
@@ -19,8 +17,7 @@ export default (t: Assert) => {
                 };
             }
         } as Connection;
-        const TokensStub = {} as TokensModel;
-        const users = createUsersModel(dbStub, TokensStub);
+        const users = createUsersModel(dbStub);
 
         // do
         try {
@@ -45,8 +42,7 @@ export default (t: Assert) => {
                 };
             }
         } as Connection;
-        const TokensStub = {} as TokensModel;
-        const users = createUsersModel(dbStub, TokensStub);
+        const users = createUsersModel(dbStub);
 
         // do
         try {
@@ -78,18 +74,85 @@ export default (t: Assert) => {
                 };
             }
         } as Connection;
-        const TokensStub = {
-            async createUserToken(user, clientId: string) {
-                deepEqual(user, expectedUser);
-                return 'token';
-            }
-        } as TokensModel;
-        const users = createUsersModel(dbStub, TokensStub);
+        const users = createUsersModel(dbStub);
 
         // do
-        const token = await users.login('foo@example.com', 'pass', 'clientId');
+        const user = await users.login('foo@example.com', 'pass', 'clientId');
 
         // expect
-        t.eq(token, 'token');
+        t.eq(user, expectedUser);
     });
+
+    t.test(`create with already existing user should throw UserAlreadyExisting`, async (t) => {
+        // given
+        const dbStub = <unknown>{
+            async query() {
+                return {
+                    rows: [{
+                        email: 'email@example.com'
+                    }]
+                };
+            }
+        } as Connection;
+        const users = createUsersModel(dbStub);
+
+        // do
+        try {
+            await users.create({
+                email: 'email@example.com',
+                password: 'pass',
+                firstname: 'laurent',
+                lastname: 'renard'
+            });
+            t.fail(`should not get here`);
+        } catch (e) {
+            //expect
+            t.ok(e instanceof UserAlreadyExistsError);
+        }
+    });
+
+    t.test(`create with non existing email should create a new user`, async (t) => {
+        // given
+        const user = {
+            email: 'email@example.com',
+            password: 'pass',
+            firstname: 'laurent',
+            lastname: 'renard'
+        };
+        let dbCalls = 0;
+        const dbStub = <unknown>{
+            async query() {
+                if (dbCalls === 0) {
+                    dbCalls++;
+                    return {
+                        rows: [] as unknown[]
+                    };
+                }
+
+                return {
+                    rows: [{
+                        id: 'asdf',
+                        password_hash: 'asdfdsf',
+                        password_salt: 'adsfadsfd',
+                        email: user.email,
+                        firstname: user.firstname,
+                        lastname: user.lastname
+                    }]
+                };
+            }
+        } as Connection;
+        const users = createUsersModel(dbStub);
+
+        // do
+        const {id, ...newUser} = await users.create(user);
+
+        // expect
+        t.ok(id);
+        t.eq(newUser, {
+            email: user.email,
+            firstname: user.firstname,
+            lastname: user.lastname
+        });
+    });
+
 }

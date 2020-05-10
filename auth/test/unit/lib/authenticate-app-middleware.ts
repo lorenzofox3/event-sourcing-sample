@@ -1,7 +1,8 @@
 import {Assert} from 'zora';
 import Koa from 'koa';
 import auth from '../../../src/lib/authenticate-app-middleware.js';
-import {ApplicationsModel} from '../../../src/models/applications.js';
+import errorHandler from '../../../src/lib/error-handler-middleware.js';
+import {ClientApplicationsModel} from '../../../src/models/client-applications.js';
 import request from 'supertest';
 import {InvalidApplicationCredentialsError} from '../../../src/lib/errors.js';
 
@@ -9,7 +10,7 @@ export default (t: Assert) => {
     t.test(`no Authorization header is present, should return a 401`, async (t) => {
         // given
         const app = new Koa();
-        const applicationsStub = {} as ApplicationsModel;
+        const applicationsStub = {} as ClientApplicationsModel;
         app.use(auth(applicationsStub));
 
         // do
@@ -28,7 +29,7 @@ export default (t: Assert) => {
             async authenticate(appId: string, appSecret: string) {
                 throw new InvalidApplicationCredentialsError();
             }
-        } as ApplicationsModel;
+        } as ClientApplicationsModel;
         app.use(auth(applicationsStub));
 
         // do
@@ -48,7 +49,9 @@ export default (t: Assert) => {
             async authenticate(appId: string, appSecret: string) {
                 throw new Error(`don't know what is going on`);
             }
-        } as ApplicationsModel;
+        } as ClientApplicationsModel;
+
+        app.use(errorHandler());
         app.use(auth(applicationsStub));
 
         // do
@@ -70,7 +73,7 @@ export default (t: Assert) => {
                 }
                 return null;
             }
-        } as ApplicationsModel;
+        } as ClientApplicationsModel;
         app
             .use(auth(applicationsStub))
             .use((ctx, next) => {

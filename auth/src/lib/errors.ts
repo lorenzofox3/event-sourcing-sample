@@ -15,3 +15,9 @@ export class InvalidApplicationCredentialsError extends Error {
         super(message);
     }
 }
+
+export class UserAlreadyExistsError extends Error {
+    constructor(email: string) {
+        super(`user with email ${email} already exists`);
+    }
+}

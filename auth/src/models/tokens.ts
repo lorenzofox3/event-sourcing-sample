@@ -8,19 +8,6 @@ import {User} from './users.js';
 const sign = promisify(signToken);
 const verify = promisify(verifyToken);
 
-interface TokensModelOption {
-    secret: string,
-    algorithm?: string; // todo should be enum
-}
-
-export type Token = string;
-
-export interface TokensModel {
-    createUserToken(user: User, clientId: string): Promise<Token>;
-
-    decodeToken<T>(token: Token, clientId: string): Promise<T>;
-}
-
 // todo revoke old token, expiration time etc
 export const createTokensModel = (db: Connection, options: TokensModelOption): TokensModel => {
     const {secret, algorithm = 'HS512'} = options;
@@ -39,3 +26,16 @@ export const createTokensModel = (db: Connection, options: TokensModelOption): T
 export default createTokensModel(defaultDB, {
     secret: cryptoConfig.tokenSecret
 });
+
+interface TokensModelOption {
+    secret: string,
+    algorithm?: string;
+}
+
+export type Token = string;
+
+export interface TokensModel {
+    createUserToken(user: User, clientId: string): Promise<Token>;
+
+    decodeToken<T>(token: Token, clientId: string): Promise<T>;
+}

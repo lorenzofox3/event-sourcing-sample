@@ -1,5 +1,5 @@
 import {Assert} from 'zora';
-import {createApplication, createApplicationsModel} from '../../../src/models/applications.js';
+import {createClientApplication, createClientApplicationsModel} from '../../../src/models/client-applications.js';
 import {Connection} from '../../../src/lib/db.js';
 import {InvalidApplicationCredentialsError} from '../../../src/lib/errors.js';
 
@@ -13,7 +13,7 @@ export default (t: Assert) => {
         };
 
         // do
-        const output = createApplication(input);
+        const output = createClientApplication(input);
 
         // expect
         t.eq(output.id, input.application_id);
@@ -36,7 +36,7 @@ export default (t: Assert) => {
                 };
             }
         } as Connection;
-        const applications = createApplicationsModel(dbStub);
+        const applications = createClientApplicationsModel(dbStub);
 
         //do
         const app = await applications.authenticate('appId', 'appsecret');
@@ -57,7 +57,7 @@ export default (t: Assert) => {
                 };
             }
         } as Connection;
-        const applications = createApplicationsModel(dbStub);
+        const applications = createClientApplicationsModel(dbStub);
 
         //do
         try {
@@ -72,9 +72,7 @@ export default (t: Assert) => {
     t.test(`create should return the newly created application`, async (t) => {
         // given
         const application = {
-            id: '123',
-            name: 'myAppBis',
-            secret: 'secret'
+            name: 'myAppBis'
         };
         const dbStub = {
             async query(query) {
@@ -83,7 +81,7 @@ export default (t: Assert) => {
                 };
             }
         } as Connection;
-        const applications = createApplicationsModel(dbStub);
+        const applications = createClientApplicationsModel(dbStub);
 
         // do
         const app = await applications.create(application);

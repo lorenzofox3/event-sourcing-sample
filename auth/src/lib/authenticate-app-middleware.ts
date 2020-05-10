@@ -1,9 +1,9 @@
 import basic from 'basic-auth';
 import {Context, Next} from 'koa';
-import {ApplicationsModel} from '../models/applications.js';
+import {ClientApplicationsModel} from '../models/client-applications.js';
 import {InvalidApplicationCredentialsError} from './errors.js';
 
-export default (applications: ApplicationsModel) => async (ctx: Context, next: Next) => {
+export default (applications: ClientApplicationsModel) => async (ctx: Context, next: Next) => {
     // @ts-ignore
     const clientCredentials = basic(ctx);
     if (clientCredentials) {
