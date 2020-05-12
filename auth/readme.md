@@ -11,19 +11,19 @@ With a running postgres database, run the ``scripts/init-db.sql`` as superuser: 
 
 ``\i scripts/init-db.sql``
 
-You can then create a user for you API belonging to the ``auth`` group role:
+You can then create a user for the auth API, belonging to the ``auth`` group role:
 
 ``CREATE ROLE auth_api WITH LOGIN 'the_password' IN ROLE auth``
 
-You will also need to add the ``auth`` schema to this user (or the superuser if ever you decide to use the same credentials for all the services)
+You will also need to add the ``auth`` schema to this user's search path (or the superuser if ever you decide to use the same credentials for all the services)
 
 ``ALTER ROLE auth_api SET search_path=auth;``
 
-You can now use the user credential to connect to the database
+You can now use the user credentials to connect to the database
 
 ## Add client applications
 
-Many parts of the system will need to use the auth service in order to authenticate users. You should therefore register them as clients and save their credentials.
+Many parts of the system will need to use the auth service in order to authenticate users. You should therefore register them as clients and save their credentials (Technically you could make them the same client although that will definitely not be the case in production).
 
 For the web app for example:
 

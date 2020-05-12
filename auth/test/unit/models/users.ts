@@ -4,19 +4,14 @@ import {Assert} from 'zora';
 import {Connection} from '../../../src/lib/db.js';
 import {createUsersModel} from '../../../src/models/users.js';
 import {InvalidPasswordError, UserAlreadyExistsError, UserNotFoundError} from '../../../src/lib/errors.js';
+import {createDBStub} from '../../util.js';
 
 const pbkdf2 = promisify(crypto.pbkdf2);
 
 export default (t: Assert) => {
     t.test(`login when no user matches email should throw a UserNotFoundException`, async (t) => {
         // given
-        const dbStub = {
-            async query(query) {
-                return {
-                    rows: []
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub([]) as Connection;
         const users = createUsersModel(dbStub);
 
         // do
@@ -32,16 +27,10 @@ export default (t: Assert) => {
     t.test(`login when password is invalid should throw a InvalidPasswordError`, async (t) => {
         // given
         const hash = (await pbkdf2('pass', 'salt', 100000, 64, 'sha512')).toString('hex');
-        const dbStub = {
-            async query(query) {
-                return {
-                    rows: [{
-                        password_salt: 'salt',
-                        password_hash: hash
-                    }]
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub({
+            password_salt: 'salt',
+            password_hash: hash
+        }) as Connection;
         const users = createUsersModel(dbStub);
 
         // do
@@ -63,17 +52,11 @@ export default (t: Assert) => {
             firstname: 'laurent',
             lastname: 'renard'
         };
-        const dbStub = {
-            async query(query) {
-                return {
-                    rows: [{
-                        ...expectedUser,
-                        password_salt: 'salt',
-                        password_hash: hash
-                    }]
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub({
+            ...expectedUser,
+            password_salt: 'salt',
+            password_hash: hash
+        }) as Connection;
         const users = createUsersModel(dbStub);
 
         // do
@@ -85,15 +68,9 @@ export default (t: Assert) => {
 
     t.test(`create with already existing user should throw UserAlreadyExisting`, async (t) => {
         // given
-        const dbStub = <unknown>{
-            async query() {
-                return {
-                    rows: [{
-                        email: 'email@example.com'
-                    }]
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub({
+            email: 'email@example.com'
+        }) as Connection;
         const users = createUsersModel(dbStub);
 
         // do
@@ -119,28 +96,18 @@ export default (t: Assert) => {
             firstname: 'laurent',
             lastname: 'renard'
         };
-        let dbCalls = 0;
-        const dbStub = <unknown>{
-            async query() {
-                if (dbCalls === 0) {
-                    dbCalls++;
-                    return {
-                        rows: [] as unknown[]
-                    };
-                }
-
-                return {
-                    rows: [{
-                        id: 'asdf',
-                        password_hash: 'asdfdsf',
-                        password_salt: 'adsfadsfd',
-                        email: user.email,
-                        firstname: user.firstname,
-                        lastname: user.lastname
-                    }]
-                };
-            }
-        } as Connection;
+        //@ts-ignore
+        const dbStub = <unknown>createDBStub(function* () {
+            yield [];
+            yield {
+                id: 'asdf',
+                password_hash: 'asdfdsf',
+                password_salt: 'adsfadsfd',
+                email: user.email,
+                firstname: user.firstname,
+                lastname: user.lastname
+            };
+        }) as Connection;
         const users = createUsersModel(dbStub);
 
         // do

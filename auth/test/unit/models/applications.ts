@@ -2,13 +2,14 @@ import {Assert} from 'zora';
 import {createClientApplication, createClientApplicationsModel} from '../../../src/models/client-applications.js';
 import {Connection} from '../../../src/lib/db.js';
 import {InvalidApplicationCredentialsError} from '../../../src/lib/errors.js';
+import {createDBStub} from '../../util.js';
 
 export default (t: Assert) => {
     t.test(`createApplication should make id and secret non enumerable`, (t) => {
         // given
         const input = {
             name: 'foo',
-            application_id: 'abc',
+            client_id: 'abc',
             secret: 'cde'
         };
 
@@ -16,7 +17,7 @@ export default (t: Assert) => {
         const output = createClientApplication(input);
 
         // expect
-        t.eq(output.id, input.application_id);
+        t.eq(output.id, input.client_id);
         t.eq(output.secret, input.secret);
         t.eq(output.name, input.name);
         t.eq(JSON.stringify(output), JSON.stringify({name: 'foo'}));
@@ -29,13 +30,7 @@ export default (t: Assert) => {
             name: 'myApp',
             secret: 'someSecret'
         };
-        const dbStub = {
-            async query(_: any) {
-                return {
-                    rows: [myApp]
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub(myApp) as Connection;
         const applications = createClientApplicationsModel(dbStub);
 
         //do
@@ -50,13 +45,7 @@ export default (t: Assert) => {
 
     t.test(`authenticate should throw InvalidApplicationCredentialsError if credentials are not valid`, async (t) => {
         // given
-        const dbStub = {
-            async query(_: any) {
-                return {
-                    rows: []
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub([]) as Connection;
         const applications = createClientApplicationsModel(dbStub);
 
         //do
@@ -74,13 +63,7 @@ export default (t: Assert) => {
         const application = {
             name: 'myAppBis'
         };
-        const dbStub = {
-            async query(query) {
-                return {
-                    rows: [application]
-                };
-            }
-        } as Connection;
+        const dbStub = <unknown>createDBStub(application) as Connection;
         const applications = createClientApplicationsModel(dbStub);
 
         // do
