@@ -6,5 +6,6 @@ export default ({logger = console} = {logger: console}) => async (ctx: Context, 
         await next();
     } catch (e) {
         ctx.status = e.status || 500;
+        logger.error(e);
     }
 }

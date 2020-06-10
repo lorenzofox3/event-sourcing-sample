@@ -97,17 +97,17 @@ export default (t: Assert) => {
             lastname: 'renard'
         };
         //@ts-ignore
-        const dbStub = <unknown>createDBStub(function* () {
-            yield [];
-            yield {
+        const dbStub = <unknown>createDBStub(
+            [],
+            {
                 id: 'asdf',
                 password_hash: 'asdfdsf',
                 password_salt: 'adsfadsfd',
                 email: user.email,
                 firstname: user.firstname,
                 lastname: user.lastname
-            };
-        }) as Connection;
+            }
+        ) as Connection;
         const users = createUsersModel(dbStub);
 
         // do

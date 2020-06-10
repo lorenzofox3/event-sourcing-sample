@@ -1,5 +1,7 @@
 import {Assert} from 'zora';
 import Koa from 'koa';
+// @ts-ignore
+import stub from 'sbuts';
 import auth from '../../../src/lib/authenticate-app-middleware.js';
 import errorHandler from '../../../src/lib/error-handler-middleware.js';
 import {ClientApplicationsModel} from '../../../src/models/client-applications.js';
@@ -26,9 +28,9 @@ export default (t: Assert) => {
         // given
         const app = new Koa();
         const applicationsStub = <unknown>{
-            async authenticate(appId: string, appSecret: string) {
+            authenticate: stub(async function* () {
                 throw new InvalidApplicationCredentialsError();
-            }
+            })
         } as ClientApplicationsModel;
         app.use(auth(applicationsStub));
 

@@ -30,7 +30,7 @@ export default (t: Assert) => {
             name: 'myApp',
             secret: 'someSecret'
         };
-        const dbStub = <unknown>createDBStub(myApp) as Connection;
+        const dbStub = <unknown>createDBStub(Promise.resolve(myApp)) as Connection;
         const applications = createClientApplicationsModel(dbStub);
 
         //do
@@ -45,7 +45,7 @@ export default (t: Assert) => {
 
     t.test(`authenticate should throw InvalidApplicationCredentialsError if credentials are not valid`, async (t) => {
         // given
-        const dbStub = <unknown>createDBStub([]) as Connection;
+        const dbStub = <unknown>createDBStub(Promise.resolve([])) as Connection;
         const applications = createClientApplicationsModel(dbStub);
 
         //do
@@ -63,7 +63,7 @@ export default (t: Assert) => {
         const application = {
             name: 'myAppBis'
         };
-        const dbStub = <unknown>createDBStub(application) as Connection;
+        const dbStub = <unknown>createDBStub(Promise.resolve(application)) as Connection;
         const applications = createClientApplicationsModel(dbStub);
 
         // do
